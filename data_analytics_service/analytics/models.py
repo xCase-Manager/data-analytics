@@ -1,10 +1,12 @@
+import datetime
+
 from django.db import models
-from datetime import datetime, timedelta
+from django.utils import timezone
 
 
 class Execution(models.Model):
     execution_tag = models.CharField(max_length=200)
-    creation_date = models.DateTimeField(default=datetime.now())
+    creation_date = models.DateTimeField(default=timezone.now())
 
     def __str__(self):
         return self.execution_tag
