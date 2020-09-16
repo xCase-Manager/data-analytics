@@ -2,8 +2,8 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from analytics.serializers import UserSerializer, GroupSerializer, ExecutionSerializer
-from .models import Execution
+from analytics.serializers import UserSerializer, GroupSerializer, ExecutionSerializer, ResultSerializer
+from .models import Execution, Result
 
 
 def index(request):
@@ -17,6 +17,14 @@ class ExecutionViewSet(viewsets.ModelViewSet):
     """
     queryset = Execution.objects.all()
     serializer_class = ExecutionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class ResultViewSet(viewsets.ModelViewSet):
+    """
+    Results list
+    """
+    queryset = Result.objects.all()
+    serializer_class = ResultSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class UserViewSet(viewsets.ModelViewSet):
