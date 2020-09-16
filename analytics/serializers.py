@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from .models import Execution
+from .models import Execution, Result
 from rest_framework import serializers
 
 
@@ -7,6 +7,12 @@ class ExecutionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Execution
         fields = ['execution_tag', 'creation_date']
+
+
+class ResultSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Result
+        fields = ['result_text', 'start_date']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
