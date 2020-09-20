@@ -3,21 +3,23 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
-
-class Execution(models.Model):
-    execution_tag = models.CharField(max_length=200)
+class Job(models.Model):
+    name = models.CharField(max_length=50)
+    tags = models.CharField(max_length=200)
     creation_date = models.DateTimeField(default=timezone.now())
 
     def __str__(self):
-        return self.execution_tag
+        return self.name + " : " + self.tags
 
     def was_created_recently(self):
         return self.creation_date >= timezone.now() - datetime.timedelta(days=1)
 
-class Result(models.Model):
-    execution = models.ForeignKey(Execution, on_delete=models.CASCADE)
-    result_text = models.CharField(max_length=200)
+class Execution(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    execution_tags = models.CharField(max_length=200)
+    execution_status = models.CharField(max_length=50)
     start_date = models.DateTimeField('date started')
+    finish_date = models.DateTimeField('date finished')
 
     def __str__(self):
-        return self.result_text
+        return self.tags + " : " + self.status
