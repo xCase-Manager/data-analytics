@@ -4,8 +4,8 @@ from rest_framework import routers
 
 
 router = routers.DefaultRouter()
+router.register(r'jobs', views.JobViewSet)
 router.register(r'executions', views.ExecutionViewSet)
-router.register(r'results', views.ResultViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 
