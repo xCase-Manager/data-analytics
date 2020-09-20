@@ -15,7 +15,7 @@ class Job(models.Model):
         return self.creation_date >= timezone.now() - datetime.timedelta(days=1)
 
 class Execution(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job_id = models.ForeignKey(Job, on_delete=models.CASCADE)
     execution_tags = models.CharField(max_length=200)
     execution_status = models.CharField(max_length=50)
     start_date = models.DateTimeField('date started')
