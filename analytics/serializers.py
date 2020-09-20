@@ -1,18 +1,18 @@
 from django.contrib.auth.models import User, Group
-from .models import Execution, Result
+from .models import Job, Execution
 from rest_framework import serializers
+
+
+class JobSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Job
+        fields = ['name', 'tags', 'creation_date']
 
 
 class ExecutionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Execution
-        fields = ['execution_tag', 'creation_date']
-
-
-class ResultSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Result
-        fields = ['result_text', 'start_date']
+        fields = ['id', 'job_id', 'tags', 'status', 'start_date', 'status']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
