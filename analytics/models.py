@@ -17,8 +17,8 @@ class Job(models.Model):
 class Execution(models.Model):
     job_id = models.ForeignKey(Job, on_delete=models.CASCADE)
     execution_tags = models.CharField(max_length=200)
-    execution_status = models.CharField(max_length=50)
-    start_date = models.DateTimeField('date started')
+    execution_status = models.CharField(max_length=50, default = "NOT RUN")
+    start_date = models.DateTimeField('date started', default=timezone.now())
     finish_date = models.DateTimeField('date finished')
 
     def __str__(self):
