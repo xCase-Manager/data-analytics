@@ -10,7 +10,8 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.dashboard, name='dashboard'),
+    path('executions', views.executions, name='executions'),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

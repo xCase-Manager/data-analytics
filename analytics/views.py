@@ -1,16 +1,21 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
 from analytics.serializers import JobSerializer, ExecutionSerializer, UserSerializer, GroupSerializer 
 from .models import Job, Execution
+import pandas as pd
 
 
-def index(request):
-    latest_execution_list = Execution.objects.order_by('creation_date')[:5]
-    output = ', '.join([execution.execution_tag for execution in latest_execution_list])
-    return HttpResponse(output)
+def dashboard(request):
+    jobs_orm = Job.objects.values()
+    jobs_pandas = pd.DataFrame(jobs_orm)
+    return JsonResponse(jobs_pandas.to_json(), safe=False)
 
+def executions(request):
+    executions_orm = Execution.objects.values()
+    executions_pandas = pd.DataFrame(executions_orm)
+    return JsonResponse(executions_pandas.to_json(), safe=False)
 
 class JobViewSet(viewsets.ModelViewSet):
     """
