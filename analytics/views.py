@@ -2,7 +2,9 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from analytics.serializers import JobSerializer, ExecutionSerializer, UserSerializer, GroupSerializer 
+import json
+from analytics.serializers import (JobSerializer, ExecutionSerializer, 
+    UserSerializer, GroupSerializer) 
 from .models import Job, Execution
 import pandas as pd
 
@@ -13,7 +15,8 @@ def dashboard(request):
     """
     jobs_orm = Job.objects.values()
     jobs_pandas = pd.DataFrame(jobs_orm)
-    return JsonResponse(jobs_pandas.to_json(), safe=False)
+    return JsonResponse(json.loads(jobs_pandas.to_json()), 
+        safe=False)
 
 def executions(request):
     """
@@ -21,9 +24,11 @@ def executions(request):
     """
     executions_orm = Execution.objects.values()
     executions_pandas = pd.DataFrame(executions_orm)
-    return JsonResponse(executions_pandas.set_index(["tags", "status"])
+    return JsonResponse(
+        json.loads(executions_pandas.set_index(["tags", "status"])
         .count(level="status")
-        .to_json(), safe=False)
+        .to_json()), 
+        safe=False)
 
 class JobViewSet(viewsets.ModelViewSet):
     """
