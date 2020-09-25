@@ -8,14 +8,22 @@ import pandas as pd
 
 
 def dashboard(request):
+    """
+    Dashboard jobs list
+    """
     jobs_orm = Job.objects.values()
     jobs_pandas = pd.DataFrame(jobs_orm)
     return JsonResponse(jobs_pandas.to_json(), safe=False)
 
 def executions(request):
+    """
+    Execution analytics
+    """
     executions_orm = Execution.objects.values()
     executions_pandas = pd.DataFrame(executions_orm)
-    return JsonResponse(executions_pandas.to_json(), safe=False)
+    return JsonResponse(executions_pandas.set_index(["tags", "status"])
+        .count(level="status")
+        .to_json(), safe=False)
 
 class JobViewSet(viewsets.ModelViewSet):
     """
