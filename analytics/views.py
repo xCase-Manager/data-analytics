@@ -83,11 +83,24 @@ class ExecutionViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def recent(self, request):
+        """
+        filtered by date 
+        """
         recent_executions = Execution.objects.all().order_by('start_date')
         serializer = ExecutionSerializer(recent_executions, 
             context={'request': request},
             many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def finished(self, request):
+        """
+        filtered by finish data
+        """
+        return _jsonResponse(_getExecutionsList()
+            .set_index(["tags", "finish_date"])
+            .count(level="finish_date")
+            .to_json())
 
 
 class UserViewSet(viewsets.ModelViewSet):
