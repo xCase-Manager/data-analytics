@@ -22,12 +22,10 @@ def executions(request):
     """
     Execution analytics
     """
-    return JsonResponse(
-        json.loads(_getExecutionsList()
+    return _jsonResponse(_getExecutionsList()
         .set_index(["tags", "status"])
         .count(level="status")
-        .to_json()), 
-        safe=False)
+        .to_json())
 
 def _getExecutionsList():
     """
@@ -35,6 +33,25 @@ def _getExecutionsList():
     """
     executions_orm = Execution.objects.values()
     return pd.DataFrame(executions_orm)
+
+def _jsonResponse(payload):
+    """
+    response formatter
+    """
+    return JsonResponse(
+        json.loads(payload), 
+        safe=False)
+
+def executions(request):
+    """
+    Execution analytics
+    """
+    return JsonResponse(
+        json.loads(_getExecutionsList()
+        .set_index(["tags", "status"])
+        .count(level="status")
+        .to_json()), 
+        safe=False)
 
 class JobViewSet(viewsets.ModelViewSet):
     """
