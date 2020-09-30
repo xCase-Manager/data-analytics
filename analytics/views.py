@@ -1,7 +1,8 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, action
 import json
 from analytics.serializers import (JobSerializer, ExecutionSerializer, 
     UserSerializer, GroupSerializer) 
@@ -18,13 +19,24 @@ def dashboard(request):
     return JsonResponse(json.loads(jobs_pandas.to_json()), 
         safe=False)
 
+@api_view(['GET'])
 def executions(request):
     """
     Execution analytics
     """
+    if request.method == 'GET':
+        return _jsonResponse(_getExecutionsList()
+            .set_index(["tags", "status"])
+            .count(level="status")
+            .to_json())
+
+def executionsFinish(request):
+    """
+    Execution analytics
+    """
     return _jsonResponse(_getExecutionsList()
-        .set_index(["tags", "status"])
-        .count(level="status")
+        .set_index(["tags", "finish_date"])
+        .count(level="finish_date")
         .to_json())
 
 def _getExecutionsList():
@@ -68,6 +80,15 @@ class ExecutionViewSet(viewsets.ModelViewSet):
     queryset = Execution.objects.all()
     serializer_class = ExecutionSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def recent(self, request):
+        recent_executions = Execution.objects.all().order_by('start_date')
+        serializer = ExecutionSerializer(recent_executions, 
+            context={'request': request},
+            many=True)
+        return Response(serializer.data)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
