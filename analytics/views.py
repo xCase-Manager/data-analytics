@@ -4,7 +4,8 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
 import json
-from analytics.serializers import (JobSerializer, ExecutionSerializer, 
+from analytics.serializers import (
+    JobSerializer, ExecutionSerializer, 
     UserSerializer, GroupSerializer) 
 from .models import Job, Execution
 import pandas as pd
@@ -17,52 +18,6 @@ def dashboard(request):
     jobs_orm = Job.objects.values()
     jobs_pandas = pd.DataFrame(jobs_orm)
     return JsonResponse(json.loads(jobs_pandas.to_json()), 
-        safe=False)
-
-@api_view(['GET'])
-def executions(request):
-    """
-    Execution analytics
-    """
-    if request.method == 'GET':
-        return _jsonResponse(_getExecutionsList()
-            .set_index(["tags", "status"])
-            .count(level="status")
-            .to_json())
-
-def executionsFinish(request):
-    """
-    Execution analytics
-    """
-    return _jsonResponse(_getExecutionsList()
-        .set_index(["tags", "finish_date"])
-        .count(level="finish_date")
-        .to_json())
-
-def _getExecutionsList():
-    """
-    get executions list
-    """
-    executions_orm = Execution.objects.values()
-    return pd.DataFrame(executions_orm)
-
-def _jsonResponse(payload):
-    """
-    response formatter
-    """
-    return JsonResponse(
-        json.loads(payload), 
-        safe=False)
-
-def executions(request):
-    """
-    Execution analytics
-    """
-    return JsonResponse(
-        json.loads(_getExecutionsList()
-        .set_index(["tags", "status"])
-        .count(level="status")
-        .to_json()), 
         safe=False)
 
 class JobViewSet(viewsets.ModelViewSet):
@@ -95,12 +50,37 @@ class ExecutionViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def finished(self, request):
         """
-        filtered by finish data
+        filtered by finish date
         """
-        return _jsonResponse(_getExecutionsList()
+        return self._jsonResponse(self._getList()
             .set_index(["tags", "finish_date"])
             .count(level="finish_date")
             .to_json())
+
+    @action(detail=False, methods=['get'])
+    def status(self, request):
+        """
+        filtered by status
+        """
+        return self._jsonResponse(self._getList()
+            .set_index(["tags", "status"])
+            .count(level="status")
+            .to_json())
+    
+    def _getList(self):
+        """
+        get executions list
+        """
+        executions_orm = Execution.objects.values()
+        return pd.DataFrame(executions_orm)
+    
+    def _jsonResponse(self, payload):
+        """
+        response formatter
+        """
+        return JsonResponse(
+            json.loads(payload), 
+            safe=False)
 
 
 class UserViewSet(viewsets.ModelViewSet):
