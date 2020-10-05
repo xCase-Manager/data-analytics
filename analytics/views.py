@@ -28,6 +28,17 @@ class JobViewSet(viewsets.ModelViewSet):
     serializer_class = JobSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @action(detail=False, methods=['get'])
+    def recent(self, request):
+        """
+        filtered by date
+        """
+        recent_jobs = Job.objects.all().order_by('creation_date')
+        serializer = JobSerializer(recent_jobs, 
+            context={'request': request},
+            many=True)
+        return Response(serializer.data)
+
 class ExecutionViewSet(viewsets.ModelViewSet):
     """
     Executions list
