@@ -1,13 +1,11 @@
-from django.urls import include, path, re_path
-from django.conf.urls import url 
-from analytics.views import (
-    views, jobs)
 from rest_framework import routers
+from analytics.views import (
+    views, executions, jobs)
 
 
 router = routers.DefaultRouter()
 router.register(r'jobs', jobs.JobViewSet)
-router.register(r'executions', views.ExecutionViewSet)
+router.register(r'executions', executions.ExecutionViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 
