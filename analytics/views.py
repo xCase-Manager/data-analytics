@@ -11,15 +11,6 @@ from .models import Job, Execution
 import pandas as pd
 
 
-def dashboard(request):
-    """
-    Dashboard jobs list
-    """
-    jobs_orm = Job.objects.values()
-    jobs_pandas = pd.DataFrame(jobs_orm)
-    return JsonResponse(json.loads(jobs_pandas.to_json()), 
-        safe=False)
-
 class JobViewSet(viewsets.ModelViewSet):
     """
     Jobs list
@@ -38,6 +29,31 @@ class JobViewSet(viewsets.ModelViewSet):
             context={'request': request},
             many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def tags(self, request):
+        """
+        filtered by tags
+        """
+        return self._jsonResponse(self._getList()
+            .set_index(["name", "tags"])
+            .count(level="tags")
+            .to_json())
+
+    def _getList(self):
+        """
+        get executions list
+        """
+        executions_orm = Job.objects.values()
+        return pd.DataFrame(executions_orm)
+    
+    def _jsonResponse(self, payload):
+        """
+        response formatter
+        """
+        return JsonResponse(
+            json.loads(payload), 
+            safe=False)
 
 class ExecutionViewSet(viewsets.ModelViewSet):
     """
