@@ -1,6 +1,7 @@
 from django.urls import include, path, re_path
 from django.conf.urls import url 
-from . import views
+from analytics.views import (
+    views)
 from rest_framework import routers
 
 

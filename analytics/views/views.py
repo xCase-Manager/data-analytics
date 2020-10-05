@@ -4,11 +4,12 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
 import json
+import pandas as pd
 from analytics.serializers import (
     JobSerializer, ExecutionSerializer, 
     UserSerializer, GroupSerializer) 
-from .models import Job, Execution
-import pandas as pd
+from analytics.models import (
+    Job, Execution)
 
 
 class JobViewSet(viewsets.ModelViewSet):
