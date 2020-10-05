@@ -1,20 +1,15 @@
 from django.http import JsonResponse
-from django.contrib.auth.models import User, Group
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, action
-import json
-import pandas as pd
-from analytics.serializers import (
-    JobSerializer, ExecutionSerializer, 
-    UserSerializer, GroupSerializer) 
-from analytics.models import (
-    Job, Execution)
+from rest_framework.decorators import action
+import json, pandas as pd
+from analytics.serializers import JobSerializer 
+from analytics.models import Job
 
 
 class JobViewSet(viewsets.ModelViewSet):
     """
-    Jobs list
+    Jobs view
     """
     queryset = Job.objects.all()
     serializer_class = JobSerializer
@@ -55,74 +50,3 @@ class JobViewSet(viewsets.ModelViewSet):
         return JsonResponse(
             json.loads(payload), 
             safe=False)
-
-class ExecutionViewSet(viewsets.ModelViewSet):
-    """
-    Executions list
-    """
-    queryset = Execution.objects.all()
-    serializer_class = ExecutionSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    @action(detail=False, methods=['get'])
-    def recent(self, request):
-        """
-        filtered by date 
-        """
-        recent_executions = Execution.objects.all().order_by('start_date')
-        serializer = ExecutionSerializer(recent_executions, 
-            context={'request': request},
-            many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def finished(self, request):
-        """
-        filtered by finish date
-        """
-        return self._jsonResponse(self._getList()
-            .set_index(["tags", "finish_date"])
-            .count(level="finish_date")
-            .to_json())
-
-    @action(detail=False, methods=['get'])
-    def status(self, request):
-        """
-        filtered by status
-        """
-        return self._jsonResponse(self._getList()
-            .set_index(["tags", "status"])
-            .count(level="status")
-            .to_json())
-    
-    def _getList(self):
-        """
-        get executions list
-        """
-        executions_orm = Execution.objects.values()
-        return pd.DataFrame(executions_orm)
-    
-    def _jsonResponse(self, payload):
-        """
-        response formatter
-        """
-        return JsonResponse(
-            json.loads(payload), 
-            safe=False)
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    Users list
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    Groupds list
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
