@@ -1,13 +1,11 @@
-from django.http import JsonResponse
-from rest_framework import viewsets, permissions, status
+from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-import json, pandas as pd
 from analytics.serializers import ExecutionSerializer
 from analytics.models import Job, Execution
-
+from .view import View
   
-class ExecutionViewSet(viewsets.ModelViewSet):
+class ExecutionViewSet(View):
     """
     Executions list
     """
@@ -18,9 +16,10 @@ class ExecutionViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def recent(self, request):
         """
-        filtered by date 
+        ordered by date 
         """
-        recent_executions = Execution.objects.all().order_by('start_date')
+        recent_executions = Execution.objects \
+            .all().order_by('start_date')
         serializer = ExecutionSerializer(recent_executions, 
             context={'request': request},
             many=True)
@@ -31,32 +30,12 @@ class ExecutionViewSet(viewsets.ModelViewSet):
         """
         filtered by finish date
         """
-        return self._jsonResponse(self._getList()
-            .set_index(["tags", "finish_date"])
-            .count(level="finish_date")
-            .to_json())
+        return self._filterBy(Execution.objects.values(), 
+            "tags", "finish_date")
 
     @action(detail=False, methods=['get'])
     def status(self, request):
         """
         filtered by status
         """
-        return self._jsonResponse(self._getList()
-            .set_index(["tags", "status"])
-            .count(level="status")
-            .to_json())
-    
-    def _getList(self):
-        """
-        get executions list
-        """
-        executions_orm = Execution.objects.values()
-        return pd.DataFrame(executions_orm)
-    
-    def _jsonResponse(self, payload):
-        """
-        response formatter
-        """
-        return JsonResponse(
-            json.loads(payload), 
-            safe=False)
+        return self._filterBy("tags", "status")
