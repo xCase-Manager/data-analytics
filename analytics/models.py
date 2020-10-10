@@ -7,6 +7,7 @@ class Job(models.Model):
     name = models.CharField(max_length=50)
     tags = models.CharField(max_length=200)
     creation_date = models.DateTimeField('created date', default=None, blank=True, null=True)
+    update_date = models.DateTimeField('updated date', default=None, blank=True, null=True)
 
     def __str__(self):
         return self.name
