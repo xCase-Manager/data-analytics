@@ -6,7 +6,7 @@ class View(viewsets.ModelViewSet):
     """
     main view
     """
-    def _filterBy(self, orm, key1, key2):
+    def _filter(self, orm, key1, key2):
         """
         filtered by keys
         """

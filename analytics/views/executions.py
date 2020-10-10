@@ -30,7 +30,7 @@ class ExecutionViewSet(View):
         """
         filtered by finish date
         """
-        return self._filterBy(Execution.objects.values(), 
+        return self._filter(Execution.objects.values(), 
             "tags", "finish_date")
 
     @action(detail=False, methods=['get'])
@@ -38,4 +38,4 @@ class ExecutionViewSet(View):
         """
         filtered by status
         """
-        return self._filterBy("tags", "status")
+        return self._filter("tags", "status")
