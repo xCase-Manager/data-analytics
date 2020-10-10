@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework.exceptions import APIException
 import json, pandas as pd
 
 
@@ -11,10 +12,13 @@ class View(viewsets.ModelViewSet):
         """
         filtered by keys
         """
-        return self._jsonResponse(self._getList(orm)
-            .set_index([key1, key2])
-            .count(level=key2)
-            .to_json())
+        try:
+            return self._jsonResponse(self._getList(orm)
+                .set_index([key1, key2])
+                .count(level=key2)
+                .to_json())
+        except KeyError:
+            raise APIException("could not process request")
     
     def _getList(self, orm):
         """
