@@ -1,13 +1,11 @@
-from django.http import JsonResponse
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
+from rest_framework import permissions, status
 from rest_framework.decorators import action
-import json, pandas as pd
 from analytics.serializers import JobSerializer 
 from analytics.models import Job
+from .view import View
 
 
-class JobViewSet(viewsets.ModelViewSet):
+class JobViewSet(View):
     """
     Jobs view
     """
@@ -20,7 +18,8 @@ class JobViewSet(viewsets.ModelViewSet):
         """
         filtered by date
         """
-        recent_jobs = Job.objects.all().order_by('creation_date')
+        recent_jobs = Job.objects \
+            .all().order_by('creation_date')
         serializer = JobSerializer(recent_jobs, 
             context={'request': request},
             many=True)
@@ -31,22 +30,5 @@ class JobViewSet(viewsets.ModelViewSet):
         """
         filtered by tags
         """
-        return self._jsonResponse(self._getList()
-            .set_index(["name", "tags"])
-            .count(level="tags")
-            .to_json())
-
-    def _getList(self):
-        """
-        get executions list
-        """
-        executions_orm = Job.objects.values()
-        return pd.DataFrame(executions_orm)
-    
-    def _jsonResponse(self, payload):
-        """
-        response formatter
-        """
-        return JsonResponse(
-            json.loads(payload), 
-            safe=False)
+        return self._filter(Job.objects.values(), 
+            "name", "tags")

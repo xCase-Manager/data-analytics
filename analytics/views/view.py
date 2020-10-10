@@ -1,3 +1,4 @@
+from rest_framework.response import Response
 from rest_framework import viewsets
 import json, pandas as pd
 
@@ -25,6 +26,4 @@ class View(viewsets.ModelViewSet):
         """
         response formatter
         """
-        return Response(
-            json.loads(payload), 
-            safe=False)
+        return Response(json.loads(payload))

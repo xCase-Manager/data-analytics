@@ -1,5 +1,4 @@
 from rest_framework import permissions, status
-from rest_framework.response import Response
 from rest_framework.decorators import action
 from analytics.serializers import ExecutionSerializer
 from analytics.models import Job, Execution
@@ -38,4 +37,5 @@ class ExecutionViewSet(View):
         """
         filtered by status
         """
-        return self._filter("tags", "status")
+        return self._filter(Execution.objects.values(),
+            "tags", "status")
