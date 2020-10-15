@@ -42,8 +42,22 @@ class ExecutionViewSet(View):
             "tags", "status")
 
     @action(detail=False, methods=['get'])
-    def records(self, request):
+    def shape(self, request):
+        """
+        get records shape
+        """
+        return self._recordsShape(Execution.objects.values())
+
+    @action(detail=False, methods=['get'])
+    def size(self, request):
         """
         get records number
         """
-        return self._recordsNumber(Execution.objects.values())
+        return self._recordsSize(Execution.objects.values())
+
+    @action(detail=False, methods=['get'])
+    def dimension(self, request):
+        """
+        get records dimension
+        """
+        return self._recordsNdim(Execution.objects.values())

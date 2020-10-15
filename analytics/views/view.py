@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import APIException
 import json, pandas as pd, numpy as np, tensorflow as tf
 import tensorflow_probability as tfp
+from .json_encoder import JsonEncoder
 
 
 class View(viewsets.ModelViewSet):
@@ -21,12 +22,28 @@ class View(viewsets.ModelViewSet):
         except KeyError:
             raise APIException("could not process request")
     
-    def _recordsNumber(self, orm):
+    def _recordsShape(self, orm):
         """
-        records number
+        records shape
         """
         return self._jsonResponse(
             json.dumps(self._getList(orm).shape))
+    
+    def _recordsSize(self, orm):
+        """
+        records size
+        """
+        return self._jsonResponse(
+          json.dumps({'size': self._getList(orm).size}, 
+          cls=JsonEncoder))
+
+    def _recordsNdim(self, orm):
+        """
+        records ndim
+        """
+        return self._jsonResponse(
+          json.dumps({'dimension': self._getList(orm).ndim}, 
+          cls=JsonEncoder))
     
     def _getList(self, orm):
         """
