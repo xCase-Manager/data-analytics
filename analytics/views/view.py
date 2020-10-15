@@ -26,7 +26,7 @@ class View(viewsets.ModelViewSet):
         records number
         """
         return self._jsonResponse(
-            str(self._getList(orm).shape[0]))
+            json.dumps(self._getList(orm).shape))
     
     def _getList(self, orm):
         """
