@@ -40,3 +40,10 @@ class ExecutionViewSet(View):
         """
         return self._filter(Execution.objects.values(),
             "tags", "status")
+
+    @action(detail=False, methods=['get'])
+    def records(self, request):
+        """
+        get records number
+        """
+        return self._recordsNumber(Execution.objects.values())

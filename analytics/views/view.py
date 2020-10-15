@@ -1,7 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.exceptions import APIException
-import json, pandas as pd
+import json, pandas as pd, numpy as np, tensorflow as tf
+import tensorflow_probability as tfp
 
 
 class View(viewsets.ModelViewSet):
@@ -19,6 +20,13 @@ class View(viewsets.ModelViewSet):
                 .to_json())
         except KeyError:
             raise APIException("could not process request")
+    
+    def _recordsNumber(self, orm):
+        """
+        records number
+        """
+        return self._jsonResponse(
+            str(self._getList(orm).shape[0]))
     
     def _getList(self, orm):
         """
