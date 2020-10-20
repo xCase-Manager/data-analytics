@@ -10,6 +10,7 @@ class View(viewsets.ModelViewSet):
     """
     main view
     """
+
     def _filter(self, orm, key1, key2):
         """
         filtered by keys
@@ -56,3 +57,12 @@ class View(viewsets.ModelViewSet):
         response formatter
         """
         return Response(json.loads(payload))
+
+    def _probability(self, orm):
+        """
+        probability process
+        """
+        status = self._getList(orm)[['status']]
+        dataset = tf.data.Dataset.from_tensor_slices((
+          self._getList(orm)[['tags', 'status']],
+          status.values))

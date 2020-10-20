@@ -61,3 +61,10 @@ class ExecutionViewSet(View):
         get records dimension
         """
         return self._recordsNdim(Execution.objects.values())
+
+    @action(detail=False, methods=['get'])
+    def medium(self, request):
+        """
+        get records dimension
+        """
+        return self._probability(Execution.objects.values())
