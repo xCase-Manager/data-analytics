@@ -3,6 +3,10 @@ from rest_framework import viewsets
 from rest_framework.exceptions import APIException
 import json, pandas as pd, numpy as np, tensorflow as tf
 import tensorflow_probability as tfp
+import tensorflow_transform as tft
+import tensorflow_transform.beam as tft_beam
+from tensorflow_transform.tf_metadata import dataset_metadata
+from tensorflow_transform.tf_metadata import dataset_schema
 from .json_encoder import JsonEncoder
 
 
@@ -62,7 +66,23 @@ class View(viewsets.ModelViewSet):
         """
         probability process
         """
+        # Load data
         status = self._getList(orm)[['status']]
         dataset = tf.data.Dataset.from_tensor_slices((
           self._getList(orm)[['tags', 'status']],
           status.values))
+
+        data = []
+        for i, batch in enumerate(dataset):
+            data.append(batch[0])
+
+         # 2) Model creation
+        model = tf.keras.models.Sequential()
+        model.add(tf.keras.layers.Input(shape=data[0].shape[2:])) 
+        model.add(tf.keras.layers.Flatten())
+        model.add(tf.keras.layers.Dense(512, activation='elu'))
+        model.add(tf.keras.layers.Dense(1, activation='softmax'))
+
+        # 3) Compile and fit
+        model.compile(loss='categorical_crossentropy', optimizer='adam')
+        model.fit(x=data[0], y=data[1], batch_size=2, epochs=2, shuffle=False)
