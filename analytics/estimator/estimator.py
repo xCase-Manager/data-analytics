@@ -1,5 +1,5 @@
 import pandas as pd
-from analytics.models import Job, Execution
+from analytics.models import Execution
 
 
 class ExecutionEstimator():
@@ -7,13 +7,13 @@ class ExecutionEstimator():
     Execution result estimator
     """
     # load execution data
-    orm_train = Execution.objects.values()
-    orm_eval = Execution.objects.values()
+    _orm_train = Execution.objects.values()
+    _orm_eval = Execution.objects.values()
 
     # get training set
-    _y_train = pd.DataFrame(orm).pop('passed')
+    _y_train = pd.DataFrame(self._orm_train).pop('passed')
     # get evaluation set
-    _y_eval = pd.DataFrame(orm).pop('passed')   
+    _y_eval = pd.DataFrame(self._orm_eval).pop('passed')   
 
     def showFeatures(self):
         '''
@@ -44,3 +44,11 @@ class ExecutionEstimator():
         Samples number
         '''
         return self._y_eval.shape[0]
+
+    def getMean(self, attributeName):
+        """
+        get mean of feature attribute
+        """
+        pd.concat([self._orm_train, self._y_train], axis=1)
+            .groupby(attributeName)
+            .survived.mean()
