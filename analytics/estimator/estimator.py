@@ -1,6 +1,6 @@
 import pandas as pd
 import tensorflow as tf
-from analytics.models import Execution
+from analytics.models import Execution, Executioneval
 
 
 class ExecutionEstimator():
@@ -9,7 +9,7 @@ class ExecutionEstimator():
     """
     # load execution data
     _orm_train = Execution.objects.values()
-    _orm_eval = Execution.objects.values()
+    _orm_eval = Executioneval.objects.values()
 
     # get training set
     _y_train = pd.DataFrame(self._orm_train).pop('passed')
